@@ -12,10 +12,6 @@ spring:
     password: Qwe2rty1@sdd
     schemas: public
     baseline-on-migrate: true
-    enabled: true
     url: jdbc:postgresql://localhost:5432/cat_api_db
     driver-class-name: org.postgresql.Driver
     clean-disabled: false
-    clean-on-validation-error: false
-    validate-on-migrate: false
-    locations: filesystem:db/migration
