@@ -1,2 +1,21 @@
 settings:
   api-key: live_tF1DP6ary6TwsK1YceaeoMQ7B6cRuZFLQr23GFU3ZtVe5AwM8yZSYTkczB4WYXZ2
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cat_api_db
+    username: postgres
+    password: Qwe2rty1@sdd
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    user: postgres
+    password: Qwe2rty1@sdd
+    schemas: public
+    baseline-on-migrate: true
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/cat_api_db
+    driver-class-name: org.postgresql.Driver
+    clean-disabled: false
+    clean-on-validation-error: false
+    validate-on-migrate: false
+    locations: filesystem:db/migration
