@@ -4,7 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "cat_fact")
 public class CatFact {
@@ -20,22 +24,6 @@ public class CatFact {
 
     public CatFact(long id, String fact) {
         this.id = id;
-        this.fact = fact;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getFact() {
-        return fact;
-    }
-
-    public void setFact(String fact) {
         this.fact = fact;
     }
 }

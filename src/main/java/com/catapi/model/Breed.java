@@ -4,7 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "breed")
 public class Breed {
@@ -28,38 +32,6 @@ public class Breed {
         this.id = id;
         this.outerBreedId = outerBreedId;
         this.breedName = breedName;
-        this.description = description;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getOuterBreedId() {
-        return outerBreedId;
-    }
-
-    public void setOuterBreedId(String outerBreedId) {
-        this.outerBreedId = outerBreedId;
-    }
-
-    public String getBreedName() {
-        return breedName;
-    }
-
-    public void setBreedName(String breedName) {
-        this.breedName = breedName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
     }
 }
