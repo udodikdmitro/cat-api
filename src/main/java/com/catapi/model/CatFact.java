@@ -1,9 +1,6 @@
 package com.catapi.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +12,7 @@ public class CatFact {
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "fact")
@@ -22,8 +20,7 @@ public class CatFact {
 
     public CatFact() {}
 
-    public CatFact(long id, String fact) {
-        this.id = id;
+    public CatFact(String fact) {
         this.fact = fact;
     }
 }

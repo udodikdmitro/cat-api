@@ -1,9 +1,6 @@
 package com.catapi.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +12,7 @@ public class Breed {
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "outer_breed_id")
@@ -28,8 +26,7 @@ public class Breed {
 
     public Breed() {}
 
-    public Breed(long id, String outerBreedId, String breedName, String description) {
-        this.id = id;
+    public Breed(String outerBreedId, String breedName, String description) {
         this.outerBreedId = outerBreedId;
         this.breedName = breedName;
         this.description = description;
