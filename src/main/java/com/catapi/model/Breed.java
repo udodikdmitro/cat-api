@@ -1,13 +1,17 @@
 package com.catapi.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "breed")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Breed {
 
     @Id
@@ -23,12 +27,4 @@ public class Breed {
 
     @Column(name = "description")
     private String description;
-
-    public Breed() {}
-
-    public Breed(String outerBreedId, String breedName, String description) {
-        this.outerBreedId = outerBreedId;
-        this.breedName = breedName;
-        this.description = description;
-    }
 }

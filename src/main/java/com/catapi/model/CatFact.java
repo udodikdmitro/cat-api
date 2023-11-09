@@ -1,13 +1,17 @@
 package com.catapi.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "cat_fact")
+@NoArgsConstructor
+@AllArgsConstructor
 public class CatFact {
 
     @Id
@@ -17,10 +21,4 @@ public class CatFact {
 
     @Column(name = "fact")
     private String fact;
-
-    public CatFact() {}
-
-    public CatFact(String fact) {
-        this.fact = fact;
-    }
 }
