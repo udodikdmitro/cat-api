@@ -11,7 +11,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "breed")
 @NoArgsConstructor
-@AllArgsConstructor
 public class Breed {
 
     @Id
