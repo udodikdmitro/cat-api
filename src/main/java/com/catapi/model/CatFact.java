@@ -11,7 +11,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "cat_fact")
 @NoArgsConstructor
-@AllArgsConstructor
 public class CatFact {
 
     @Id
