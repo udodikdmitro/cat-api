@@ -58,9 +58,7 @@ class CatFactServiceTest {
     void getCatFactsFromApi_should_throw_exception_with_right_message(){
         when(restTemplate.getForObject(anyString(), any()))
                 .thenThrow(new Exception("Помилка"));
-        ExternalApiException e = assertThrows(ExternalApiException.class, () -> {
-            catFactService.getCatFactsFromApi();
-        });
+        ExternalApiException e = assertThrows(ExternalApiException.class, () -> catFactService.getCatFactsFromApi());
         assertEquals("Cannot get cat fact from external api: Помилка", e.getMessage());
     }
 
