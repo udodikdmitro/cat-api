@@ -11,11 +11,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CatFactResponse {
+public class CatFactDataResponse {
 
     @JsonProperty("data")
     private List<CatFactView> data;
-
-    @JsonProperty("last_page")
-    private int lastPage;
 }

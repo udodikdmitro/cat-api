@@ -3,7 +3,8 @@ package com.catapi.service;
 import com.catapi.entity.CatFact;
 import com.catapi.exception.ExternalApiException;
 import com.catapi.jpa.CatFactRepository;
-import com.catapi.view.CatFactResponse;
+import com.catapi.view.CatFactDataResponse;
+import com.catapi.view.CatFactLastPageResponse;
 import com.catapi.view.CatFactView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,18 +26,18 @@ public class CatFactService{
     }
 
     public List<CatFactView> getCatFactsFromApi() {
-        CatFactResponse catFactResponse = requestCatFacts(CAT_API_URL);
+        CatFactLastPageResponse catFactLastPageResponse = requestLastPage();
 
-        if (catFactResponse == null) {
+        if (catFactLastPageResponse == null) {
             return Collections.emptyList();
         }
 
-        int lastPage = catFactResponse.getLastPage();
+        int lastPage = catFactLastPageResponse.getLastPage();
         List<CatFactView> catFactViewList = new ArrayList<>();
 
         for (int i = 1; i <= lastPage; i++) {
             String currentPageUrl = CAT_API_URL + "?page=" + i;
-            CatFactResponse response = requestCatFacts(currentPageUrl);
+            CatFactDataResponse response = requestCatFacts(currentPageUrl);
 
             if (response != null) {
                 List<CatFactView> currentListCatFactView = response.getData();
@@ -48,11 +49,19 @@ public class CatFactService{
         return catFactViewList;
     }
 
-    private CatFactResponse requestCatFacts(String catApiUrl) {
+    private CatFactDataResponse requestCatFacts(String catApiUrl) {
         try {
-            return restTemplate.getForObject(catApiUrl, CatFactResponse.class);
+            return restTemplate.getForObject(catApiUrl, CatFactDataResponse.class);
         } catch (Exception e){
             throw new ExternalApiException("Cannot get cat fact from external api: " + e.getMessage());
+        }
+    }
+
+    private CatFactLastPageResponse requestLastPage() {
+        try {
+            return restTemplate.getForObject(CAT_API_URL, CatFactLastPageResponse.class);
+        } catch (Exception e){
+            throw new ExternalApiException("Cannot get number of pages from external api: " + e.getMessage());
         }
     }
 

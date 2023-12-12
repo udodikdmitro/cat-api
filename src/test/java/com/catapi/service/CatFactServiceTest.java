@@ -2,7 +2,8 @@ package com.catapi.service;
 
 import com.catapi.exception.ExternalApiException;
 import com.catapi.jpa.CatFactRepository;
-import com.catapi.view.CatFactResponse;
+import com.catapi.view.CatFactDataResponse;
+import com.catapi.view.CatFactLastPageResponse;
 import com.catapi.view.CatFactView;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -34,11 +35,10 @@ class CatFactServiceTest {
 
     @Test
     void getCatFactsFromApi_should_return_list_of_CatFactView_when_response_is_not_null(){
-        CatFactResponse firstCatFactResponse = new CatFactResponse();
-        firstCatFactResponse.setLastPage(1);
-        when(restTemplate.getForObject(eq(CAT_API_URL), any())).thenReturn(firstCatFactResponse);
-        CatFactResponse responseWithData = new CatFactResponse();
-        responseWithData.setLastPage(1);
+        CatFactLastPageResponse firstCatFactLastPageResponse = new CatFactLastPageResponse();
+        firstCatFactLastPageResponse.setLastPage(1);
+        when(restTemplate.getForObject(eq(CAT_API_URL), any())).thenReturn(firstCatFactLastPageResponse);
+        CatFactDataResponse responseWithData = new CatFactDataResponse();
         List<CatFactView> data = List.of(
                 new CatFactView("Fact 1", 5),
                 new CatFactView("Fact 2", 5)
@@ -57,26 +57,37 @@ class CatFactServiceTest {
     @Test
     void getCatFactsFromApi_should_throw_exception_with_right_message(){
         when(restTemplate.getForObject(anyString(), any()))
-                .thenThrow(new Exception("Помилка"));
+                .thenThrow(new RuntimeException("Помилка"));
         ExternalApiException e = assertThrows(ExternalApiException.class, () -> catFactService.getCatFactsFromApi());
-        assertEquals("Cannot get cat fact from external api: Помилка", e.getMessage());
+        assertEquals("Cannot get number of pages from external api: Помилка", e.getMessage());
+    }
+
+    @Test
+    void test(){
+        String errorText = "Some error text";
+        CatFactLastPageResponse firstCatFactLastPageResponse = new CatFactLastPageResponse();
+        firstCatFactLastPageResponse.setLastPage(1);
+        when(restTemplate.getForObject(eq(CAT_API_URL), any())).thenReturn(firstCatFactLastPageResponse);
+        when(restTemplate.getForObject(eq(CAT_API_URL + "?page=1"), any())).thenThrow(new RuntimeException(errorText));
+        ExternalApiException result = assertThrows(ExternalApiException.class, () -> catFactService.getCatFactsFromApi());
+        String expected = "Cannot get cat fact from external api: " + errorText;
+        assertEquals(expected, result.getMessage());
     }
 
     @Test
     void saveNewFactsFromExternalApi_should_save_only_new_cat_facts() {
-        CatFactResponse firstCatFactResponse = new CatFactResponse();
-        firstCatFactResponse.setLastPage(1);
-        when(restTemplate.getForObject(eq(CAT_API_URL), any())).thenReturn(firstCatFactResponse);
-        CatFactResponse responseWithData = new CatFactResponse();
-        responseWithData.setLastPage(1);
+        CatFactLastPageResponse firstCatFactLastPageResponse = new CatFactLastPageResponse();
+        firstCatFactLastPageResponse.setLastPage(1);
+        when(restTemplate.getForObject(eq(CAT_API_URL), any())).thenReturn(firstCatFactLastPageResponse);
         List<CatFactView> data = List.of(
                 new CatFactView("New fact 1", 9),
                 new CatFactView("New fact 2", 9),
                 new CatFactView("Existing fact", 13)
         );
-        responseWithData.setData(data);
+        CatFactDataResponse catFactDataResponse = new CatFactDataResponse();
+        catFactDataResponse.setData(data);
         when(restTemplate.getForObject(eq(CAT_API_URL + "?page=1"), any()))
-                .thenReturn(responseWithData);
+                .thenReturn(catFactDataResponse);
 
         Set<String> dbFacts = new HashSet<>();
         dbFacts.add("Existing fact");
@@ -92,5 +103,32 @@ class CatFactServiceTest {
         when(catFactRepository.count()).thenReturn(3L);
         long result = catFactService.getNumberOfFacts();
         assertEquals(3L, result);
+    }
+
+    @Test
+    void getCatFactsFromApi_should_work_correct_if_response_is_null(){
+        CatFactLastPageResponse firstCatFactLastPageResponse = new CatFactLastPageResponse();
+        firstCatFactLastPageResponse.setLastPage(2);
+        when(restTemplate.getForObject(eq(CAT_API_URL), any())).thenReturn(firstCatFactLastPageResponse);
+        CatFactDataResponse responseWithoutData = new CatFactDataResponse();
+        responseWithoutData.setData(null);
+        when(restTemplate.getForObject(eq(CAT_API_URL + "?page=1"), any()))
+                .thenReturn(responseWithoutData);
+        CatFactDataResponse responseWithData = new CatFactDataResponse();
+        List<CatFactView> data = List.of(
+                new CatFactView("New fact 1", 9),
+                new CatFactView("New fact 2", 9),
+                new CatFactView("New fact 3", 9)
+        );
+        responseWithData.setData(data);
+        when(restTemplate.getForObject(eq(CAT_API_URL + "?page=2"), any()))
+                .thenReturn(responseWithData);
+        List<CatFactView> result = catFactService.getCatFactsFromApi();
+        List<CatFactView> expected = List.of(
+                new CatFactView("New fact 1", 9),
+                new CatFactView("New fact 2", 9),
+                new CatFactView("New fact 3", 9)
+        );
+        assertEquals(expected, result);
     }
 }
