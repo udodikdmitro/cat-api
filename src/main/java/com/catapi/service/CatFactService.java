@@ -70,7 +70,8 @@ public class CatFactService{
         Set<String> dbFacts = catFactRepository.getAllFacts();
 
         for(CatFactView externalApiFact: externalApiFacts){
-            boolean isFactNew = dbFacts.add(externalApiFact.getFact());
+            String currentFact = externalApiFact.getFact().replace("\u00A0", " ");
+            boolean isFactNew = dbFacts.add(currentFact);
 
             if (isFactNew){
                 CatFact catFact = new CatFact();
