@@ -8,7 +8,4 @@ import java.util.Set;
 public interface CatFactRepository extends JpaRepository<CatFact, Long> {
     @Query("SELECT fact.fact FROM CatFact as fact")
     Set<String> getAllFacts();
-
-    @Override
-    long count();
 }
