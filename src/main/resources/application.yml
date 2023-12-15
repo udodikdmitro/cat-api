@@ -1,6 +1,14 @@
 settings:
   api-key: live_tF1DP6ary6TwsK1YceaeoMQ7B6cRuZFLQr23GFU3ZtVe5AwM8yZSYTkczB4WYXZ2
 
+logging:
+  pattern:
+    console: "%clr([%d]) %clr([%-5level]) [%logger] - %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    com.catapi: DEBUG
+  file:
+    name: logs\local_logs.log
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/cat_api_db

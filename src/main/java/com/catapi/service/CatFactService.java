@@ -6,12 +6,14 @@ import com.catapi.jpa.CatFactRepository;
 import com.catapi.view.CatFactDataResponse;
 import com.catapi.view.CatFactLastPageResponse;
 import com.catapi.view.CatFactView;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class CatFactService{
 
@@ -70,15 +72,17 @@ public class CatFactService{
         Set<String> dbFacts = catFactRepository.getAllFacts();
 
         for(CatFactView externalApiFact: externalApiFacts){
-            String currentFact = externalApiFact.getFact().replace("\u00A0", " ");
-            boolean isFactNew = dbFacts.add(currentFact);
+            String factWithoutNBSP = externalApiFact.getFact().replace("\u00A0", " ");
+            boolean isFactNew = dbFacts.add(factWithoutNBSP);
 
             if (isFactNew){
+                log.debug("New cat fact is appeared: {}", factWithoutNBSP);
                 CatFact catFact = new CatFact();
-                catFact.setFact(externalApiFact.getFact());
+                catFact.setFact(factWithoutNBSP);
                 catFactRepository.save(catFact);
             }
         }
+        log.info("Cat facts are updated");
     }
 
     public long getNumberOfFacts() {
