@@ -1,5 +1,6 @@
 package com.catapi.view;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -10,6 +11,8 @@ public record CatBreedView(
         String name,
         String origin,
         String description,
+
+        @JsonProperty("wikipedia_url")
         String wikipediaUrl
 ) {
     @Override
