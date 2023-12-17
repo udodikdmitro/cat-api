@@ -5,13 +5,20 @@ import lombok.Getter;
 
 import java.util.Objects;
 
-@Getter
-public record CatBreedView(
+public record BreedView(
+        @Getter
         String id,
+
+        @Getter
         String name,
+
+        @Getter
         String origin,
+
+        @Getter
         String description,
 
+        @Getter
         @JsonProperty("wikipedia_url")
         String wikipediaUrl
 ) {
@@ -19,7 +26,7 @@ public record CatBreedView(
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CatBreedView that = (CatBreedView) o;
+        BreedView that = (BreedView) o;
         return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(origin, that.origin)
                 && Objects.equals(description, that.description) && Objects.equals(wikipediaUrl, that.wikipediaUrl);
     }
