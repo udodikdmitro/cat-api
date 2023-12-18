@@ -20,7 +20,7 @@ public class Breed {
     @Column(name = "outer_breed_id")
     private String outerBreedId;
 
-    @Column(name = "outer_name")
+    @Column(name = "breed_name")
     private String breedName;
 
     @Column(name = "description")
