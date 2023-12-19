@@ -71,7 +71,7 @@ public class CatFactService{
         Set<String> dbFacts = catFactRepository.getAllFacts();
 
         for(CatFactView externalApiFact: externalApiFacts){
-            String factWithoutNBSP = externalApiFact.getFact().replace("\u00A0", " ");
+            String factWithoutNBSP = externalApiFact.fact().replace("\u00A0", " ");
             boolean isFactNew = dbFacts.add(factWithoutNBSP);
 
             if (isFactNew){

@@ -30,7 +30,7 @@ public class BreedService {
         List<BreedView> externalBreedView = getAllBreedsFromExternalApi();
 
         for(BreedView breedView: externalBreedView) {
-            String id = breedView.getId();
+            String id = breedView.id();
             Optional<Breed> optionalEntity = breedRepository.findByOuterBreedId(id);
 
             Breed breedUpdateOrCreate = optionalEntity
@@ -39,14 +39,14 @@ public class BreedService {
                         Breed newUpdateBreed = new Breed();
                         newUpdateBreed.setOuterBreedId(id);
                         newUpdateBreed.setBreedName(breedView.name());
-                        newUpdateBreed.setDescription(breedView.getDescription());
+                        newUpdateBreed.setDescription(breedView.description());
                         return newUpdateBreed;
                     })
                     .orElseGet(() -> {
                         Breed newSaveBreed = new Breed();
                         newSaveBreed.setOuterBreedId(id);
                         newSaveBreed.setBreedName(breedView.name());
-                        newSaveBreed.setDescription(breedView.getDescription());
+                        newSaveBreed.setDescription(breedView.description());
                         return newSaveBreed;
                     });
             breedRepository.save(breedUpdateOrCreate);

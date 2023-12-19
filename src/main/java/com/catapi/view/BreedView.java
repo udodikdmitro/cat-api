@@ -1,24 +1,17 @@
 package com.catapi.view;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-
 import java.util.Objects;
 
 public record BreedView(
-        @Getter
         String id,
 
-        @Getter
         String name,
 
-        @Getter
         String origin,
 
-        @Getter
         String description,
 
-        @Getter
         @JsonProperty("wikipedia_url")
         String wikipediaUrl
 ) {

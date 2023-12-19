@@ -1,11 +1,8 @@
 package com.catapi.view;
 
-import lombok.Getter;
-
 import java.util.Objects;
 
 public record CatFactView(
-        @Getter
         String fact,
         int length
 ) {
