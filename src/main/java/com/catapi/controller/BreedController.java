@@ -1,6 +1,7 @@
 package com.catapi.controller;
 
 import com.catapi.service.BreedService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +16,8 @@ public class BreedController {
     }
 
     @GetMapping("/update")
-    public String updateBreedDbController() {
-        return breedService.updateBreedDb();
+    public ResponseEntity<String> updateBreedDbController() {
+        breedService.updateBreedDb();
+        return ResponseEntity.ok("Breeds are updated");
     }
 }

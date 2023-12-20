@@ -3,9 +3,14 @@ package com.catapi.service;
 import com.catapi.entity.Breed;
 import com.catapi.jpa.BreedRepository;
 import com.catapi.view.BreedView;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -21,36 +26,40 @@ public class BreedService {
     }
 
     public List<BreedView> getAllBreedsFromExternalApi() {
-        BreedView[] catBreedsArray = restTemplate.getForObject(BREED_API_URL, BreedView[].class);
-        assert catBreedsArray != null;
-        return List.of(catBreedsArray);
+        ResponseEntity<List<BreedView>> responseEntity = restTemplate.exchange(BREED_API_URL, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<BreedView>>() {}
+        );
+        List<BreedView> catBreedsList = responseEntity.getBody();
+        return Objects.requireNonNullElseGet(catBreedsList, List::of);
     }
 
-    public String updateBreedDb(){
-        List<BreedView> externalBreedView = getAllBreedsFromExternalApi();
+    public void updateBreedDb() {
+        List<BreedView> externalBreedViews = getAllBreedsFromExternalApi();
 
-        for(BreedView breedView: externalBreedView) {
+        for (BreedView breedView : externalBreedViews) {
             String id = breedView.id();
-            Optional<Breed> optionalEntity = breedRepository.findByOuterBreedId(id);
+            Optional<Breed> optionalEntity = breedRepository.findByOuterBreedId(id);//t
 
-            Breed breedUpdateOrCreate = optionalEntity
-                    .map(existingEntity -> {
-                        breedRepository.deleteById(optionalEntity.get().getId());
-                        Breed newUpdateBreed = new Breed();
-                        newUpdateBreed.setOuterBreedId(id);
-                        newUpdateBreed.setBreedName(breedView.name());
-                        newUpdateBreed.setDescription(breedView.description());
-                        return newUpdateBreed;
-                    })
-                    .orElseGet(() -> {
-                        Breed newSaveBreed = new Breed();
-                        newSaveBreed.setOuterBreedId(id);
-                        newSaveBreed.setBreedName(breedView.name());
-                        newSaveBreed.setDescription(breedView.description());
-                        return newSaveBreed;
-                    });
-            breedRepository.save(breedUpdateOrCreate);
+            optionalEntity.ifPresentOrElse(
+                    existingEntity ->
+                        updateBreed(breedView, existingEntity, id),
+                    () ->
+                        saveNewBreed(breedView, id));
+            // подивитися, як це можна зробити за допомогою ifPresentOrElse
+            // зробити тести:
+            // зробити два методи - оновлення і додавання  і написати на них тести
         }
-        return "Breeds are updated";
+    }
+
+    private void updateBreed(BreedView breedView, Breed existingEntity, String id) {
+        existingEntity.setOuterBreedId(id);
+        existingEntity.setBreedName(breedView.name());
+        existingEntity.setDescription(breedView.description());
+        breedRepository.save(existingEntity);
+    }
+
+    private void saveNewBreed(BreedView breedView, String id) {
+        Breed newBreed = new Breed();
+        updateBreed(breedView, newBreed, id);
     }
 }
