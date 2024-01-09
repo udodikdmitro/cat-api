@@ -8,11 +8,9 @@ import com.catapi.view.CatFactView;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import static com.catapi.service.CatFactService.CAT_API_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
