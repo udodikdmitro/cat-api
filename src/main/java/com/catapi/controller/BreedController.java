@@ -16,8 +16,8 @@ public class BreedController {
     }
 
     @GetMapping("/update")
-    public ResponseEntity<String> updateBreedDbController() {
-        breedService.updateBreedDb();
+    public ResponseEntity<String> updateBreedsFromExternalApiController() {
+        breedService.updateBreedsFromExternalApi();
         return ResponseEntity.ok("Breeds are updated");
     }
 }

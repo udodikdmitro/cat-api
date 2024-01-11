@@ -5,6 +5,7 @@ import com.catapi.exception.ExternalApiException;
 import com.catapi.jpa.BreedRepository;
 import com.catapi.view.BreedView;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
@@ -79,8 +80,23 @@ class BreedServiceTest {
 
         when(breedRepository.findByOuterBreedId("1")).thenReturn(Optional.of(updateBreedEntity));
         when(breedRepository.findByOuterBreedId("2")).thenReturn(Optional.empty());
-        breedService.updateBreedDb();
+        breedService.updateBreedsFromExternalApi();
 
-        Mockito.verify(breedRepository, Mockito.times(2)).save(any());
+        ArgumentCaptor<Breed> breedCaptor = ArgumentCaptor.forClass(Breed.class);
+        Mockito.verify(breedRepository, Mockito.times(2)).save(breedCaptor.capture());
+        List<Breed> arguments = breedCaptor.getAllValues();
+
+        Breed breed1 = new Breed();
+        breed1.setOuterBreedId("1");
+        breed1.setBreedName("breedView 1");
+        breed1.setDescription("description 1");
+
+        Breed breed2 = new Breed();
+        breed2.setOuterBreedId("2");
+        breed2.setBreedName("breedView 2");
+        breed2.setDescription("description 2");
+
+        assertEquals(breed1, arguments.get(0));
+        assertEquals(breed2, arguments.get(1));
     }
 }

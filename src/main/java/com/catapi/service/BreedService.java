@@ -39,7 +39,7 @@ public class BreedService {
         }
     }
 
-    public void updateBreedDb() {
+    public void updateBreedsFromExternalApi() {
         List<BreedView> externalBreedViews = getAllBreedsFromExternalApi();
 
         for (BreedView breedView : externalBreedViews) {
