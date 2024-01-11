@@ -86,17 +86,17 @@ class BreedServiceTest {
         Mockito.verify(breedRepository, Mockito.times(2)).save(breedCaptor.capture());
         List<Breed> arguments = breedCaptor.getAllValues();
 
-        Breed breed1 = new Breed();
-        breed1.setOuterBreedId("1");
-        breed1.setBreedName("breedView 1");
-        breed1.setDescription("description 1");
+        Breed expectedUpdated = new Breed();
+        expectedUpdated.setOuterBreedId("1");
+        expectedUpdated.setBreedName("breedView 1");
+        expectedUpdated.setDescription("description 1");
 
-        Breed breed2 = new Breed();
-        breed2.setOuterBreedId("2");
-        breed2.setBreedName("breedView 2");
-        breed2.setDescription("description 2");
+        Breed expectedCreated = new Breed();
+        expectedCreated.setOuterBreedId("2");
+        expectedCreated.setBreedName("breedView 2");
+        expectedCreated.setDescription("description 2");
 
-        assertEquals(breed1, arguments.get(0));
-        assertEquals(breed2, arguments.get(1));
+        assertEquals(expectedUpdated, arguments.get(0));
+        assertEquals(expectedCreated, arguments.get(1));
     }
 }
