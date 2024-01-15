@@ -75,10 +75,10 @@ class BreedServiceTest {
         ResponseEntity<List<BreedView>> responseEntity = ResponseEntity.ok(externalBreedViews);
         when(restTemplate.exchange(anyString(), any(), isNull(), any(ParameterizedTypeReference.class)))
                 .thenReturn(responseEntity);
-        Breed updateBreedEntity = new Breed();
-        updateBreedEntity.setOuterBreedId("1");
+        Breed breedEntityToUpdate = new Breed();
+        breedEntityToUpdate.setOuterBreedId("1");
 
-        when(breedRepository.findByOuterBreedId("1")).thenReturn(Optional.of(updateBreedEntity));
+        when(breedRepository.findByOuterBreedId("1")).thenReturn(Optional.of(breedEntityToUpdate));
         when(breedRepository.findByOuterBreedId("2")).thenReturn(Optional.empty());
         breedService.updateBreedsFromExternalApi();
 

@@ -1,5 +1,6 @@
 package com.catapi.entity;
 
+import com.catapi.enums.ActiveState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,4 +22,8 @@ public class CatFact {
 
     @Column(name = "fact")
     private String fact;
+
+    @Column(name = "active_state")
+    @Enumerated(EnumType.STRING)
+    private ActiveState activeState;
 }
