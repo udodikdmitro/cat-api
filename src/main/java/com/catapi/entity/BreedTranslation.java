@@ -1,6 +1,7 @@
 package com.catapi.entity;
 
 import com.catapi.enums.Locale;
+import com.catapi.enums.UpdateMode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,4 +31,8 @@ public class BreedTranslation {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "update_mode")
+    @Enumerated(EnumType.STRING)
+    private UpdateMode updateMode;
 }

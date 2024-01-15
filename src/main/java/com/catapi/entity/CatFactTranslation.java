@@ -1,6 +1,7 @@
 package com.catapi.entity;
 
 import com.catapi.enums.Locale;
+import com.catapi.enums.UpdateMode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,4 +28,8 @@ public class CatFactTranslation {
 
     @Column(name = "translation_text")
     private String translationText;
+
+    @Column(name = "update_mode")
+    @Enumerated(EnumType.STRING)
+    private UpdateMode updateMode;
 }
