@@ -90,7 +90,7 @@ class CatFactServiceTest {
         Set<String> dbFacts = new HashSet<>();
         dbFacts.add("Existing fact");
 
-        when(catFactRepository.getAllFacts()).thenReturn(dbFacts);
+        when(catFactRepository.getAllTextOfFacts()).thenReturn(dbFacts);
         catFactService.saveNewFactsFromExternalApi();
         verify(catFactRepository, times(2)).save(any());
     }

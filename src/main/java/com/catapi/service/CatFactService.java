@@ -1,6 +1,7 @@
 package com.catapi.service;
 
 import com.catapi.entity.CatFact;
+import com.catapi.enums.ActiveState;
 import com.catapi.exception.ExternalApiException;
 import com.catapi.jpa.CatFactRepository;
 import com.catapi.view.CatFactDataResponse;
@@ -66,18 +67,19 @@ public class CatFactService{
         }
     }
 
-    public void saveNewFactsFromExternalApi(){
+    public void saveNewFactsFromExternalApi() {
         List<CatFactView> externalApiFacts = getCatFactsFromApi();
-        Set<String> dbFacts = catFactRepository.getAllFacts();
-
+        Set<String> textOfFacts = catFactRepository.getAllTextOfFacts();
         for(CatFactView externalApiFact: externalApiFacts){
-            String factWithoutNBSP = externalApiFact.fact().replace("\u00A0", " ");
-            boolean isFactNew = dbFacts.add(factWithoutNBSP);
+            //TODO: поросмотреть записи в таблице cat_fact и найти проблемы.
+            String factWithoutNBSP = externalApiFact.fact().replace("\u00A0", " ").trim();
+            boolean isFactNew = textOfFacts.add(factWithoutNBSP);
 
             if (isFactNew){
                 log.debug("New cat fact is appeared: {}", factWithoutNBSP);
                 CatFact catFact = new CatFact();
                 catFact.setFact(factWithoutNBSP);
+                catFact.setActiveState(ActiveState.ACTIVE);
                 catFactRepository.save(catFact);
             }
         }

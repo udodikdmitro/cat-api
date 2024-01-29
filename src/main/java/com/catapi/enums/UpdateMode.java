@@ -1,6 +1,6 @@
 package com.catapi.enums;
 
 public enum UpdateMode {
-    AI,
+    LINGUA,
     MANUAL
 }

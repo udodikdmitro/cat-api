@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -26,4 +28,7 @@ public class CatFact {
     @Column(name = "active_state")
     @Enumerated(EnumType.STRING)
     private ActiveState activeState;
+
+    @OneToMany(mappedBy = "catFact", fetch = FetchType.LAZY)
+    private List<CatFactTranslation> catFactTranslation;
 }
