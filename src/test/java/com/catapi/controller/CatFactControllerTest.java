@@ -22,7 +22,7 @@ class CatFactControllerTest {
 
     @Test
     void update_controller_should_update_expected_response() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/update"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/cat-facts/retrieveExternal"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("Cat facts are updated"));
     }
@@ -31,7 +31,7 @@ class CatFactControllerTest {
     void count_controller_should_return_number_of_facts() throws Exception {
         long result = 5L;
         when(catFactService.getNumberOfFacts()).thenReturn(result);
-        mockMvc.perform(MockMvcRequestBuilders.get("/count"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/cat-facts/count"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("The number of facts is " + result));
     }

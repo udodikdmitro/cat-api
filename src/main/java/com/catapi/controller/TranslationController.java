@@ -9,20 +9,20 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/translations")
-public class CatFactTranslationController {
+public class TranslationController {
     private final TranslationService translationService;
     private final CatFactTranslationRepository catFactTranslationRepository;
 
-    public CatFactTranslationController(
+    public TranslationController(
             TranslationService translationService,
             CatFactTranslationRepository catFactTranslationRepository) {
         this.translationService = translationService;
         this.catFactTranslationRepository = catFactTranslationRepository;
     }
 
-    @PostMapping("/linguatools/catFacts")
+    @PostMapping("/linguatools/translateAllCatFacts")
     public void translateAllCatFactsByLinguatools(@RequestParam Locale locale) {
-        translationService.translateAllByLinguatools(locale);
+        translationService.translateAllCatFactsByLinguatools(locale);
     }
 
     @PutMapping("/catFactTranslation/{catFactTranslationId}")

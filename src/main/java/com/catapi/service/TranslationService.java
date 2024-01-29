@@ -42,7 +42,7 @@ public class TranslationService {
         return getLinguatoolsTranslation(locale, text);
     }
 
-    public void translateAllByLinguatools(Locale locale) {
+    public void translateAllCatFactsByLinguatools(Locale locale) {
         final List<CatFact> allFacts = catFactRepository.findAllByActiveState(ActiveState.ACTIVE);
         allFacts.forEach(fact -> {
             Optional<CatFactTranslation> localeTranslation = fact.getCatFactTranslation().stream()

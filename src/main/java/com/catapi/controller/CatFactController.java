@@ -18,7 +18,7 @@ public class CatFactController {
         this.catFactService = catFactService;
     }
 
-    @GetMapping("/update")
+    @GetMapping("/retrieveExternal")
     public ResponseEntity<String> updateCatFacts() {
         catFactService.saveNewFactsFromExternalApi();
         return ResponseEntity.ok("Cat facts are updated");
