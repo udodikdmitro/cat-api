@@ -57,7 +57,7 @@ public class TranslationService {
                         createCatFactTranslation(fact, locale, translationText);
                     });
         });
-        log.info("All active facts without translations to " + locale + " are translated");
+        log.info("All active facts without translations to " + locale.getLanguageName() + " are translated");
     }
 
     public void createCatFactTranslation(CatFact catFact, Locale locale, String translationText) {
