@@ -71,14 +71,13 @@ public class CatFactService{
         List<CatFactView> externalApiFacts = getCatFactsFromApi();
         Set<String> textOfFacts = catFactRepository.getAllTextOfFacts();
         for(CatFactView externalApiFact: externalApiFacts){
-            //TODO: поросмотреть записи в таблице cat_fact и найти проблемы.
-            String factWithoutNBSP = externalApiFact.fact().replace("\u00A0", " ").trim();
-            boolean isFactNew = textOfFacts.add(factWithoutNBSP);
+            String preparedFactText = externalApiFact.fact().replace("\u00A0", " ").trim();
+            boolean isFactNew = textOfFacts.add(preparedFactText);
 
             if (isFactNew){
-                log.debug("New cat fact is appeared: {}", factWithoutNBSP);
+                log.debug("New cat fact is appeared: {}", preparedFactText);
                 CatFact catFact = new CatFact();
-                catFact.setFact(factWithoutNBSP);
+                catFact.setFact(preparedFactText);
                 catFact.setActiveState(ActiveState.ACTIVE);
                 catFactRepository.save(catFact);
             }
