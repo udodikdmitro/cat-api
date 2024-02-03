@@ -55,7 +55,7 @@ public class CatFactService{
         try {
             return restTemplate.getForObject(catApiUrl, CatFactDataResponse.class);
         } catch (Exception e){
-            throw new ExternalApiException("Cannot get cat fact from external api: " + e.getMessage());
+            throw new ExternalApiException(STR."Cannot get cat fact from external api: \{e.getMessage()}");
         }
     }
 
@@ -63,7 +63,7 @@ public class CatFactService{
         try {
             return restTemplate.getForObject(CAT_API_URL, CatFactLastPageResponse.class);
         } catch (Exception e){
-            throw new ExternalApiException("Cannot get number of pages from external api: " + e.getMessage());
+            throw new ExternalApiException(STR."Cannot get number of pages from external api: \{e.getMessage()}");
         }
     }
 

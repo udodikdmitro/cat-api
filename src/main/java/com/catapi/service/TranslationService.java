@@ -49,13 +49,13 @@ public class TranslationService {
                     .filter(catFactTranslation -> catFactTranslation.getLocale() == locale)
                     .findFirst();
 
-            localeTranslation.ifPresentOrElse(
-                    _ -> log.debug("Translation is already present. No need to translate"),
-                    () -> {
-                        String textToTranslate = fact.getFact();
-                        String translationText = getLinguatoolsTranslation(locale, textToTranslate);
-                        createCatFactTranslation(fact, locale, translationText);
-                    });
+            if (localeTranslation.isEmpty()) {
+                String textToTranslate = fact.getFact();
+                String translationText = getLinguatoolsTranslation(locale, textToTranslate);
+                createCatFactTranslation(fact, locale, translationText);
+                log.debug("New translation is saved");
+            }
+
         });
         log.info(STR."All active facts without translations to \{locale.getLanguageName()} are translated");
     }
