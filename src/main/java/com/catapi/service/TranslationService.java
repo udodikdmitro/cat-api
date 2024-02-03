@@ -45,19 +45,19 @@ public class TranslationService {
     public void translateAllCatFactsByLinguatools(Locale locale) {
         final List<CatFact> allFacts = catFactRepository.findAllByActiveState(ActiveState.ACTIVE);
         allFacts.forEach(fact -> {
-            Optional<CatFactTranslation> localeTranslation = fact.getCatFactTranslation().stream()
+            Optional<CatFactTranslation> localeTranslation = fact.getCatFactTranslations().stream()
                     .filter(catFactTranslation -> catFactTranslation.getLocale() == locale)
                     .findFirst();
 
             localeTranslation.ifPresentOrElse(
-                    existingTranslation -> log.debug("Translation is already present. No need to translate"),
+                    _ -> log.debug("Translation is already present. No need to translate"),
                     () -> {
                         String textToTranslate = fact.getFact();
                         String translationText = getLinguatoolsTranslation(locale, textToTranslate);
                         createCatFactTranslation(fact, locale, translationText);
                     });
         });
-        log.info("All active facts without translations to " + locale.getLanguageName() + " are translated");
+        log.info(STR."All active facts without translations to \{locale.getLanguageName()} are translated");
     }
 
     public void createCatFactTranslation(CatFact catFact, Locale locale, String translationText) {

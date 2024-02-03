@@ -30,5 +30,5 @@ public class CatFact {
     private ActiveState activeState;
 
     @OneToMany(mappedBy = "catFact", fetch = FetchType.LAZY)
-    private List<CatFactTranslation> catFactTranslation;
+    private List<CatFactTranslation> catFactTranslations;
 }
