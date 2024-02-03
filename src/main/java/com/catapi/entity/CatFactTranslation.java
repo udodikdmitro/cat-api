@@ -51,11 +51,13 @@ public class CatFactTranslation {
     @Override
     public String toString() {
         return STR."""
-            CatFactTranslation{id=\{id},
-            catFact=\{catFact},
-            locale=\{locale},
-            translationText='\{translationText}\{'\''},
-            updateMode=\{updateMode}\{'}'}
+            {
+                CatFactTranslation{id=\{id},
+                catFact=\{catFact},
+                locale=\{locale},
+                translationText=\{translationText},
+                updateMode=\{updateMode}
+            }
         """;
     }
 }
