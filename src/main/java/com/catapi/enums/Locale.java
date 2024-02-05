@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum Locale {
 
-    UA("Ukrainian"),
+    UK("Ukrainian"),
     RU("Russian");
     private final String languageName;
 

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @Entity
@@ -32,4 +34,30 @@ public class CatFactTranslation {
     @Column(name = "update_mode")
     @Enumerated(EnumType.STRING)
     private UpdateMode updateMode;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CatFactTranslation that = (CatFactTranslation) o;
+        return Objects.equals(catFact, that.catFact) && locale == that.locale && Objects.equals(translationText, that.translationText) && updateMode == that.updateMode;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(catFact, locale, translationText, updateMode);
+    }
+
+    @Override
+    public String toString() {
+        return STR."""
+            {
+                CatFactTranslation{id=\{id},
+                catFact=\{catFact},
+                locale=\{locale},
+                translationText=\{translationText},
+                updateMode=\{updateMode}
+            }
+        """;
+    }
 }

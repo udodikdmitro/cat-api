@@ -1,14 +1,14 @@
 package com.catapi.controller;
 
+import com.catapi.enums.ActiveState;
 import com.catapi.service.CatFactService;
+import com.catapi.view.CatFactUpdateView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/cat-facts")
 public class CatFactController {
 
     private final CatFactService catFactService;
@@ -18,7 +18,7 @@ public class CatFactController {
         this.catFactService = catFactService;
     }
 
-    @GetMapping("/update")
+    @GetMapping("/retrieveExternal")
     public ResponseEntity<String> updateCatFacts() {
         catFactService.saveNewFactsFromExternalApi();
         return ResponseEntity.ok("Cat facts are updated");
@@ -27,6 +27,24 @@ public class CatFactController {
     @GetMapping("/count")
     public String countCatFacts() {
         long result = catFactService.getNumberOfFacts();
-        return "The number of facts is " + result;
+        return STR."The number of facts is \{result}";
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateCatFact(
+            @PathVariable Long id,
+            @RequestBody CatFactUpdateView catFactUpdateView
+    ) {
+        catFactService.updateCatFact(id, catFactUpdateView);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/state/{id}")
+    public ResponseEntity<Void> updateCatFactState(
+            @PathVariable Long id,
+            @RequestParam ActiveState newActiveState
+    ) {
+        catFactService.updateCatFactState(id, newActiveState);
+        return ResponseEntity.ok().build();
     }
 }
