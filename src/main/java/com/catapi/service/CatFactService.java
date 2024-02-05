@@ -6,7 +6,9 @@ import com.catapi.exception.ExternalApiException;
 import com.catapi.jpa.CatFactRepository;
 import com.catapi.view.CatFactDataResponse;
 import com.catapi.view.CatFactLastPageResponse;
+import com.catapi.view.CatFactUpdateView;
 import com.catapi.view.CatFactView;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,7 +87,25 @@ public class CatFactService{
         log.info("Cat facts are updated");
     }
 
+    public void updateCatFact(Long id, CatFactUpdateView catFactUpdateView) {
+        final CatFact factToUpdate = catFactRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(STR."Cat fact with id \{id} is not found"));
+        factToUpdate.setFact(catFactUpdateView.newFactText());
+        catFactRepository.save(factToUpdate);
+    }
+
+    public void updateCatFactState(Long id, ActiveState newActiveState) {
+        final CatFact factToUpdate = catFactRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(STR."Cat fact with id \{id} is not found"));
+        factToUpdate.setActiveState(newActiveState);
+        catFactRepository.save(factToUpdate);
+    }
+    
+    
+
     public long getNumberOfFacts() {
         return catFactRepository.count();
     }
+
+
 }
