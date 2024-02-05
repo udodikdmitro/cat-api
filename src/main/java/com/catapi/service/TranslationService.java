@@ -116,7 +116,7 @@ public class TranslationService {
         while (m.find()) {
             String foundText = m.group(1);
             if (!foundText.isEmpty()) {
-                return foundText;
+                return foundText.replace("&amp;#39;", "ʼ");
             }
         }
         throw new ExternalApiException("Wrong response format");
