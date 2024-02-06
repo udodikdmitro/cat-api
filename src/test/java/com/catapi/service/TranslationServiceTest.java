@@ -6,6 +6,8 @@ import com.catapi.enums.ActiveState;
 import com.catapi.enums.Locale;
 import com.catapi.enums.UpdateMode;
 import com.catapi.exception.TranslationException;
+import com.catapi.jpa.BreedRepository;
+import com.catapi.jpa.BreedTranslationRepository;
 import com.catapi.jpa.CatFactRepository;
 import com.catapi.jpa.CatFactTranslationRepository;
 import okhttp3.*;
@@ -25,11 +27,14 @@ class TranslationServiceTest {
     private final CatFactTranslationRepository catFactTranslationRepository = mock();
     private final CatFactRepository catFactRepository = mock();
     private final OkHttpClient okHttpClient = mock();
+    private final BreedTranslationRepository breedTranslationRepository = mock();
+    private final BreedRepository breedRepository = mock();
     private final TranslationService translationService = new TranslationService(
             catFactTranslationRepository,
             catFactRepository,
-            okHttpClient
-    );
+            okHttpClient,
+            breedTranslationRepository,
+            breedRepository);
 
     @Test
     void translate_should_return_translation() {
