@@ -38,4 +38,9 @@ public class TranslationController {
     public String translateTest(@RequestParam String textToTranslate, @RequestParam Locale locale) {
         return translationService.translate(locale, textToTranslate);
     }
+
+    @PostMapping("/linguatools/translateAllBreeds")
+    public void translateAllBreedsByLinguatools(@RequestParam Locale locale) {
+        translationService.translateAllBreedsByLinguatools(locale);
+    }
 }

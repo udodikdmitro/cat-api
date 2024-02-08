@@ -13,7 +13,6 @@ import com.catapi.jpa.CatFactTranslationRepository;
 import okhttp3.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

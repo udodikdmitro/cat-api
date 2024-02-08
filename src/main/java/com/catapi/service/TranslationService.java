@@ -132,7 +132,7 @@ public class TranslationService {
     }
 
     public void translateAllBreedsByLinguatools(Locale locale) {
-        final List<Breed> allBreeds = breedRepository.findAllByActiveState(ActiveState.ACTIVE);
+        final List<Breed> allBreeds = breedRepository.findAll();
         allBreeds.forEach(breed -> {
             Optional<BreedTranslation> localeTranslation = breed.getBreedTranslations().stream()
                     .filter(breedTranslation -> breedTranslation.getLocale() == locale)
@@ -141,7 +141,7 @@ public class TranslationService {
             if (localeTranslation.isEmpty()) {
                 String breedNameToTranslate = breed.getBreedName();
                 String descriptionToTranslate = breed.getDescription();
-                String textToTranslate =  STR."\{breedNameToTranslate}@@@\{descriptionToTranslate}";
+                String textToTranslate =  STR."\{breedNameToTranslate} @@@ \{descriptionToTranslate}";
                 String translationText = getLinguatoolsTranslation(locale, textToTranslate);
                 createBreedTranslation(breed, locale, translationText);
                 log.debug("New translation is saved");
@@ -152,8 +152,9 @@ public class TranslationService {
     }
 
     public void createBreedTranslation(Breed breed, Locale locale, String translationText) {
-        String breedName = translationText.substring(0, translationText.indexOf("@") - 1);
-        String description = translationText.substring(translationText.lastIndexOf("@") + 1, translationText.length() - 1);
+        String[] translationParts = translationText.split(" @@@ ");
+        String breedName = translationParts[0];
+        String description = translationParts[1];
 
         BreedTranslation breedTranslation = new BreedTranslation();
         breedTranslation.setBreed(breed);
