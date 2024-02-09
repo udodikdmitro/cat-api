@@ -1,5 +1,7 @@
 package com.catapi.service;
 
+import com.catapi.entity.Breed;
+import com.catapi.entity.BreedTranslation;
 import com.catapi.entity.CatFact;
 import com.catapi.entity.CatFactTranslation;
 import com.catapi.enums.ActiveState;
@@ -201,5 +203,37 @@ class TranslationServiceTest {
                 \tvar translated_by_url = "https://translate.google.com/";
                 \t$('#translated_by').html("Translated by <a href=" + translated_by_url + " target='_blank' rel='nofollow' class='text-secondary' style='text-decoration:underline;'>" + translated_by_name + "</a>");
                 """, testToTranslate);
+    }
+
+    @Test
+    void testTranslateAllBreedsByLinguatools_should_save_only_absent_breed_translations_once() {
+        BreedTranslation breedTranslation1 = new BreedTranslation();
+        breedTranslation1.setBreedName("Порода1");
+        breedTranslation1.setDescription("Опис1");
+        breedTranslation1.setLocale(Locale.UK);
+        Breed breed1 = new Breed();
+        breed1.setId(1L);
+        breed1.setBreedName("Breed1");
+        breed1.setDescription("Description1");
+        breed1.setBreedTranslations(List.of(breedTranslation1));
+
+        Breed breed2 = new Breed();
+        breed2.setId(2L);
+        breed2.setBreedName("Breed2");
+        breed2.setDescription("Description2");
+        breed2.setBreedTranslations(List.of());
+
+        when(breedRepository.findAll()).thenReturn(List.of(breed1, breed2));
+
+        mockOkHttpClientResponse("Breed2 @@@ Description2", "Порода2 @@@ Опис2");
+
+        translationService.translateAllBreedsByLinguatools(Locale.UK);
+
+        ArgumentCaptor<BreedTranslation> breedCaptor = ArgumentCaptor.forClass(BreedTranslation.class);
+        verify(breedTranslationRepository, times(1)).save(breedCaptor.capture());
+
+        BreedTranslation saveBreedTranslation = breedCaptor.getAllValues().getFirst();
+        assertEquals("Порода2", saveBreedTranslation.getBreedName());
+        assertEquals("Опис2", saveBreedTranslation.getDescription());
     }
 }
