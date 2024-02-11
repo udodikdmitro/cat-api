@@ -207,21 +207,25 @@ class TranslationServiceTest {
 
     @Test
     void testTranslateAllBreedsByLinguatools_should_save_only_absent_breed_translations_once() {
-        BreedTranslation breedTranslation1 = new BreedTranslation();
-        breedTranslation1.setBreedName("Порода1");
-        breedTranslation1.setDescription("Опис1");
-        breedTranslation1.setLocale(Locale.UK);
+        BreedTranslation breedTranslation1Uk = new BreedTranslation();
+        breedTranslation1Uk.setBreedName("Порода1");
+        breedTranslation1Uk.setDescription("Опис1");
+        breedTranslation1Uk.setLocale(Locale.UK);
         Breed breed1 = new Breed();
         breed1.setId(1L);
         breed1.setBreedName("Breed1");
         breed1.setDescription("Description1");
-        breed1.setBreedTranslations(List.of(breedTranslation1));
+        breed1.setBreedTranslations(List.of(breedTranslation1Uk));
 
+        BreedTranslation breedTranslation2Ru = new BreedTranslation();
+        breedTranslation2Ru.setBreedName("Порода2");
+        breedTranslation2Ru.setDescription("Описание2");
+        breedTranslation2Ru.setLocale(Locale.RU);
         Breed breed2 = new Breed();
         breed2.setId(2L);
         breed2.setBreedName("Breed2");
         breed2.setDescription("Description2");
-        breed2.setBreedTranslations(List.of());
+        breed2.setBreedTranslations(List.of(breedTranslation2Ru));
 
         when(breedRepository.findAll()).thenReturn(List.of(breed1, breed2));
 

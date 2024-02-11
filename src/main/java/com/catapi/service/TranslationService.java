@@ -131,7 +131,7 @@ public class TranslationService {
         throw new ExternalApiException("Wrong response format");
     }
 
-    public void translateAllBreedsByLinguatools(Locale locale) {
+    public String translateAllBreedsByLinguatools(Locale locale) {
         final List<Breed> allBreeds = breedRepository.findAll();
         allBreeds.forEach(breed -> {
             Optional<BreedTranslation> localeTranslation = breed.getBreedTranslations().stream()
@@ -146,9 +146,10 @@ public class TranslationService {
                 createBreedTranslation(breed, locale, translationText);
                 log.debug("New translation is saved");
             }
-
         });
-        log.info(STR."All active breeds without translations to \{locale.getLanguageName()} are translated");
+        String message = STR. "All active breeds without translations to \{ locale.getLanguageName() } are translated" ;
+        log.info(message);
+        return message;
     }
 
     public void createBreedTranslation(Breed breed, Locale locale, String translationText) {
