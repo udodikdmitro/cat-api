@@ -151,6 +151,41 @@ class TranslationServiceTest {
         assertEquals(expectedUpdated, updatedTranslation);
     }
 
+    @Test
+    void testTranslateAllBreedsByLinguatools_should_save_only_absent_breed_translations_once() {
+        BreedTranslation breedTranslation1Uk = new BreedTranslation();
+        breedTranslation1Uk.setBreedName("Порода1");
+        breedTranslation1Uk.setDescription("Опис1");
+        breedTranslation1Uk.setLocale(Locale.UK);
+        Breed breed1 = new Breed();
+        breed1.setId(1L);
+        breed1.setBreedName("Breed1");
+        breed1.setDescription("Description1");
+        breed1.setBreedTranslations(List.of(breedTranslation1Uk));
+
+        BreedTranslation breedTranslation2Ru = new BreedTranslation();
+        breedTranslation2Ru.setBreedName("Порода2");
+        breedTranslation2Ru.setDescription("Описание2");
+        breedTranslation2Ru.setLocale(Locale.RU);
+        Breed breed2 = new Breed();
+        breed2.setId(2L);
+        breed2.setBreedName("Breed2");
+        breed2.setDescription("Description2");
+        breed2.setBreedTranslations(List.of(breedTranslation2Ru));
+
+        when(breedRepository.findAll()).thenReturn(List.of(breed1, breed2));
+
+        mockOkHttpClientResponse("Breed2 @@@ Description2", "Порода2 @@@ Опис2");
+
+        translationService.translateAllBreedsByLinguatools(Locale.UK);
+
+        ArgumentCaptor<BreedTranslation> breedCaptor = ArgumentCaptor.forClass(BreedTranslation.class);
+        verify(breedTranslationRepository, times(1)).save(breedCaptor.capture());
+
+        BreedTranslation saveBreedTranslation = breedCaptor.getAllValues().getFirst();
+        assertEquals("Порода2", saveBreedTranslation.getBreedName());
+        assertEquals("Опис2", saveBreedTranslation.getDescription());
+    }
 
     private void mockOkHttpClientResponse(String originalText, String expectedTranslation) {
         ResponseBody responseBody = ResponseBody.create(
@@ -203,41 +238,5 @@ class TranslationServiceTest {
                 \tvar translated_by_url = "https://translate.google.com/";
                 \t$('#translated_by').html("Translated by <a href=" + translated_by_url + " target='_blank' rel='nofollow' class='text-secondary' style='text-decoration:underline;'>" + translated_by_name + "</a>");
                 """, testToTranslate);
-    }
-
-    @Test
-    void testTranslateAllBreedsByLinguatools_should_save_only_absent_breed_translations_once() {
-        BreedTranslation breedTranslation1Uk = new BreedTranslation();
-        breedTranslation1Uk.setBreedName("Порода1");
-        breedTranslation1Uk.setDescription("Опис1");
-        breedTranslation1Uk.setLocale(Locale.UK);
-        Breed breed1 = new Breed();
-        breed1.setId(1L);
-        breed1.setBreedName("Breed1");
-        breed1.setDescription("Description1");
-        breed1.setBreedTranslations(List.of(breedTranslation1Uk));
-
-        BreedTranslation breedTranslation2Ru = new BreedTranslation();
-        breedTranslation2Ru.setBreedName("Порода2");
-        breedTranslation2Ru.setDescription("Описание2");
-        breedTranslation2Ru.setLocale(Locale.RU);
-        Breed breed2 = new Breed();
-        breed2.setId(2L);
-        breed2.setBreedName("Breed2");
-        breed2.setDescription("Description2");
-        breed2.setBreedTranslations(List.of(breedTranslation2Ru));
-
-        when(breedRepository.findAll()).thenReturn(List.of(breed1, breed2));
-
-        mockOkHttpClientResponse("Breed2 @@@ Description2", "Порода2 @@@ Опис2");
-
-        translationService.translateAllBreedsByLinguatools(Locale.UK);
-
-        ArgumentCaptor<BreedTranslation> breedCaptor = ArgumentCaptor.forClass(BreedTranslation.class);
-        verify(breedTranslationRepository, times(1)).save(breedCaptor.capture());
-
-        BreedTranslation saveBreedTranslation = breedCaptor.getAllValues().getFirst();
-        assertEquals("Порода2", saveBreedTranslation.getBreedName());
-        assertEquals("Опис2", saveBreedTranslation.getDescription());
     }
 }

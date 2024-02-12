@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.EnumSet;
-
 @RestController
 @RequestMapping("/translations")
 public class TranslationController {
@@ -44,16 +42,8 @@ public class TranslationController {
     }
 
     @PostMapping("/linguatools/translateAllBreeds")
-    public ResponseEntity<String> translateAllBreedsByLinguatools(@RequestParam Locale locale) {
-        try {
-            if (EnumSet.of(Locale.UK, Locale.RU).contains(Locale.valueOf(locale.toString()))) {
-                return ResponseEntity.ok(translationService.translateAllBreedsByLinguatools(locale));
-            } else {
-                throw new IllegalArgumentException(STR."Can not get translation with using parameter \{locale}");
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public String translateAllBreedsByLinguatools(@RequestParam Locale locale) {
+        return translationService.translateAllBreeds(locale);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

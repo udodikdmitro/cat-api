@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -131,7 +132,7 @@ public class TranslationService {
         throw new ExternalApiException("Wrong response format");
     }
 
-    public String translateAllBreedsByLinguatools(Locale locale) {
+    public void translateAllBreedsByLinguatools(Locale locale) {
         final List<Breed> allBreeds = breedRepository.findAll();
         allBreeds.forEach(breed -> {
             Optional<BreedTranslation> localeTranslation = breed.getBreedTranslations().stream()
@@ -147,9 +148,7 @@ public class TranslationService {
                 log.debug("New translation is saved");
             }
         });
-        String message = STR. "All active breeds without translations to \{ locale.getLanguageName() } are translated" ;
-        log.info(message);
-        return message;
+        log.info(STR. "All active breeds without translations to \{ locale.getLanguageName() } are translated");
     }
 
     public void createBreedTranslation(Breed breed, Locale locale, String translationText) {
@@ -164,5 +163,15 @@ public class TranslationService {
         breedTranslation.setDescription(description);
         breedTranslation.setUpdateMode(UpdateMode.LINGUA);
         breedTranslationRepository.save(breedTranslation);
+    }
+
+    public String translateAllBreeds(Locale locale) {
+        if (EnumSet.of(Locale.UK, Locale.RU).contains(Locale.valueOf(locale.toString()))) {
+            translateAllBreedsByLinguatools(locale);
+            return STR. "All active breeds without translations to \{ locale.getLanguageName() } are translated";
+        } else {
+            log.info(STR."Can not get translation with using parameter \{locale}");   //цього логу немає, не знаю чому
+            throw new IllegalArgumentException(STR."Can not get translation with using parameter \{locale}");
+        }
     }
 }
