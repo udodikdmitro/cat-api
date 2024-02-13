@@ -20,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -63,7 +62,7 @@ public class TranslationService {
                 String textToTranslate = fact.getFact();
                 String translationText = getLinguatoolsTranslation(locale, textToTranslate);
                 createCatFactTranslation(fact, locale, translationText);
-                log.debug("New translation is saved");
+                log.debug(STR."New CatFact translation to \{locale} is created");
             }
 
         });
@@ -83,6 +82,39 @@ public class TranslationService {
         factTranslationToUpdate.setTranslationText(newTranslationText);
         factTranslationToUpdate.setUpdateMode(UpdateMode.MANUAL);
         catFactTranslationRepository.save(factTranslationToUpdate);
+    }
+
+    public void translateAllBreedsByLinguatools(Locale locale) {
+        final List<Breed> allBreeds = breedRepository.findAll();
+        allBreeds.forEach(breed -> {
+            Optional<BreedTranslation> localeTranslation = breed.getBreedTranslations().stream()
+                    .filter(breedTranslation -> breedTranslation.getLocale() == locale)
+                    .findFirst();
+
+            if (localeTranslation.isEmpty()) {
+                String breedNameToTranslate = breed.getBreedName();
+                String descriptionToTranslate = breed.getDescription();
+                String textToTranslate =  STR."\{breedNameToTranslate} @@@ \{descriptionToTranslate}";
+                String translationText = getLinguatoolsTranslation(locale, textToTranslate);
+                createBreedTranslation(breed, locale, translationText);
+                log.debug(STR."New Breed translation to \{locale} is created");
+            }
+        });
+        log.info(STR. "All active breeds without translations to \{ locale.getLanguageName() } are translated");
+    }
+
+    public void createBreedTranslation(Breed breed, Locale locale, String translationText) {
+        String[] translationParts = translationText.split(" @@@ ");
+        String breedName = translationParts[0];
+        String description = translationParts[1];
+
+        BreedTranslation breedTranslation = new BreedTranslation();
+        breedTranslation.setBreed(breed);
+        breedTranslation.setLocale(locale);
+        breedTranslation.setBreedName(breedName);
+        breedTranslation.setDescription(description);
+        breedTranslation.setUpdateMode(UpdateMode.LINGUA);
+        breedTranslationRepository.save(breedTranslation);
     }
 
     private String getLinguatoolsTranslation(Locale locale, String textToTranslate) {
@@ -130,48 +162,5 @@ public class TranslationService {
             }
         }
         throw new ExternalApiException("Wrong response format");
-    }
-
-    public void translateAllBreedsByLinguatools(Locale locale) {
-        final List<Breed> allBreeds = breedRepository.findAll();
-        allBreeds.forEach(breed -> {
-            Optional<BreedTranslation> localeTranslation = breed.getBreedTranslations().stream()
-                    .filter(breedTranslation -> breedTranslation.getLocale() == locale)
-                    .findFirst();
-
-            if (localeTranslation.isEmpty()) {
-                String breedNameToTranslate = breed.getBreedName();
-                String descriptionToTranslate = breed.getDescription();
-                String textToTranslate =  STR."\{breedNameToTranslate} @@@ \{descriptionToTranslate}";
-                String translationText = getLinguatoolsTranslation(locale, textToTranslate);
-                createBreedTranslation(breed, locale, translationText);
-                log.debug("New translation is saved");
-            }
-        });
-        log.info(STR. "All active breeds without translations to \{ locale.getLanguageName() } are translated");
-    }
-
-    public void createBreedTranslation(Breed breed, Locale locale, String translationText) {
-        String[] translationParts = translationText.split(" @@@ ");
-        String breedName = translationParts[0];
-        String description = translationParts[1];
-
-        BreedTranslation breedTranslation = new BreedTranslation();
-        breedTranslation.setBreed(breed);
-        breedTranslation.setLocale(locale);
-        breedTranslation.setBreedName(breedName);
-        breedTranslation.setDescription(description);
-        breedTranslation.setUpdateMode(UpdateMode.LINGUA);
-        breedTranslationRepository.save(breedTranslation);
-    }
-
-    public String translateAllBreeds(Locale locale) {
-        if (EnumSet.of(Locale.UK, Locale.RU).contains(Locale.valueOf(locale.toString()))) {
-            translateAllBreedsByLinguatools(locale);
-            return STR. "All active breeds without translations to \{ locale.getLanguageName() } are translated";
-        } else {
-            log.info(STR."Can not get translation with using parameter \{locale}");   //цього логу немає, не знаю чому
-            throw new IllegalArgumentException(STR."Can not get translation with using parameter \{locale}");
-        }
     }
 }

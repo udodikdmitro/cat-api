@@ -5,7 +5,6 @@ import com.catapi.enums.Locale;
 import com.catapi.jpa.CatFactTranslationRepository;
 import com.catapi.service.TranslationService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +22,9 @@ public class TranslationController {
     }
 
     @PostMapping("/linguatools/translateAllCatFacts")
-    public void translateAllCatFactsByLinguatools(@RequestParam Locale locale) {
+    public ResponseEntity<Void> translateAllCatFactsByLinguatools(@RequestParam("locale") Locale locale) {
         translationService.translateAllCatFactsByLinguatools(locale);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/catFactTranslation/{catFactTranslationId}")
@@ -37,17 +37,13 @@ public class TranslationController {
     }
 
     @GetMapping("/linguatools/translator")
-    public String translateTest(@RequestParam String textToTranslate, @RequestParam Locale locale) {
+    public String translateTest(@RequestParam String textToTranslate, @RequestParam("locale") Locale locale) {
         return translationService.translate(locale, textToTranslate);
     }
 
     @PostMapping("/linguatools/translateAllBreeds")
-    public String translateAllBreedsByLinguatools(@RequestParam Locale locale) {
-        return translationService.translateAllBreeds(locale);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Can not get translation with using this parameter locale");
+    public ResponseEntity<Void> translateAllBreedsByLinguatools(@RequestParam("locale") Locale locale) {
+        translationService.translateAllBreedsByLinguatools(locale);
+        return ResponseEntity.ok().build();
     }
 }
