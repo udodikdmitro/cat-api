@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -27,6 +28,9 @@ public class Breed {
 
     @Column(name = "description")
     private String description;
+
+    @OneToMany(mappedBy = "breed", fetch = FetchType.LAZY)
+    private List<BreedTranslation> breedTranslations;
 
     @Override
     public boolean equals(Object o) {

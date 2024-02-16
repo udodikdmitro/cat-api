@@ -1,5 +1,7 @@
 package com.catapi.service;
 
+import com.catapi.entity.Breed;
+import com.catapi.entity.BreedTranslation;
 import com.catapi.entity.CatFact;
 import com.catapi.entity.CatFactTranslation;
 import com.catapi.enums.ActiveState;
@@ -7,6 +9,8 @@ import com.catapi.enums.Locale;
 import com.catapi.enums.UpdateMode;
 import com.catapi.exception.ExternalApiException;
 import com.catapi.exception.TranslationException;
+import com.catapi.jpa.BreedRepository;
+import com.catapi.jpa.BreedTranslationRepository;
 import com.catapi.jpa.CatFactRepository;
 import com.catapi.jpa.CatFactTranslationRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -29,13 +33,18 @@ public class TranslationService {
     private final CatFactTranslationRepository catFactTranslationRepository;
     private final CatFactRepository catFactRepository;
     private final OkHttpClient okHttpClient;
+    private final BreedTranslationRepository breedTranslationRepository;
+    private final BreedRepository breedRepository;
 
     public TranslationService(
             CatFactTranslationRepository catFactTranslationRepository,
-            CatFactRepository catFactRepository, OkHttpClient okHttpClient) {
+            CatFactRepository catFactRepository, OkHttpClient okHttpClient,
+            BreedTranslationRepository breedTranslationRepository, BreedRepository breedRepository) {
         this.catFactTranslationRepository = catFactTranslationRepository;
         this.catFactRepository = catFactRepository;
         this.okHttpClient = okHttpClient;
+        this.breedTranslationRepository = breedTranslationRepository;
+        this.breedRepository = breedRepository;
     }
 
     public String translate(Locale locale, String text) {
@@ -53,7 +62,7 @@ public class TranslationService {
                 String textToTranslate = fact.getFact();
                 String translationText = getLinguatoolsTranslation(locale, textToTranslate);
                 createCatFactTranslation(fact, locale, translationText);
-                log.debug("New translation is saved");
+                log.debug(STR."New CatFact translation to \{locale} is created");
             }
 
         });
@@ -73,6 +82,39 @@ public class TranslationService {
         factTranslationToUpdate.setTranslationText(newTranslationText);
         factTranslationToUpdate.setUpdateMode(UpdateMode.MANUAL);
         catFactTranslationRepository.save(factTranslationToUpdate);
+    }
+
+    public void translateAllBreedsByLinguatools(Locale locale) {
+        final List<Breed> allBreeds = breedRepository.findAll();
+        allBreeds.forEach(breed -> {
+            Optional<BreedTranslation> localeTranslation = breed.getBreedTranslations().stream()
+                    .filter(breedTranslation -> breedTranslation.getLocale() == locale)
+                    .findFirst();
+
+            if (localeTranslation.isEmpty()) {
+                String breedNameToTranslate = breed.getBreedName();
+                String descriptionToTranslate = breed.getDescription();
+                String textToTranslate =  STR."\{breedNameToTranslate} @@@ \{descriptionToTranslate}";
+                String translationText = getLinguatoolsTranslation(locale, textToTranslate);
+                createBreedTranslation(breed, locale, translationText);
+                log.debug(STR."New Breed translation to \{locale} is created");
+            }
+        });
+        log.info(STR. "All active breeds without translations to \{ locale.getLanguageName() } are translated");
+    }
+
+    public void createBreedTranslation(Breed breed, Locale locale, String translationText) {
+        String[] translationParts = translationText.split(" @@@ ");
+        String breedName = translationParts[0];
+        String description = translationParts[1];
+
+        BreedTranslation breedTranslation = new BreedTranslation();
+        breedTranslation.setBreed(breed);
+        breedTranslation.setLocale(locale);
+        breedTranslation.setBreedName(breedName);
+        breedTranslation.setDescription(description);
+        breedTranslation.setUpdateMode(UpdateMode.LINGUA);
+        breedTranslationRepository.save(breedTranslation);
     }
 
     private String getLinguatoolsTranslation(Locale locale, String textToTranslate) {
