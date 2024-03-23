@@ -15,6 +15,8 @@ import com.catapi.jpa.CatFactTranslationRepository;
 import okhttp3.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -185,6 +187,17 @@ class TranslationServiceTest {
         BreedTranslation saveBreedTranslation = breedCaptor.getAllValues().getFirst();
         assertEquals("Порода2", saveBreedTranslation.getBreedName());
         assertEquals("Опис2", saveBreedTranslation.getDescription());
+    }
+
+    @Test
+    void testupdateBreedTranslation_should_save_updated_breed_translation_once() {
+        BreedTranslation breedTranslationToUpdate = new BreedTranslation();
+        breedTranslationToUpdate.setBreedName("Name 1");
+        breedTranslationToUpdate.setDescription("Description 1");
+        breedTranslationToUpdate.setUpdateMode(UpdateMode.MANUAL);
+        breedTranslationRepository.save(breedTranslationToUpdate);
+        ArgumentCaptor<BreedTranslation> breedCaptor = ArgumentCaptor.forClass(BreedTranslation.class);
+        Mockito.verify(breedTranslationRepository, Mockito.times(1)).save(breedCaptor.capture());
     }
 
     private void mockOkHttpClientResponse(String originalText, String expectedTranslation) {

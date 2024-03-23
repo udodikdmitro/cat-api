@@ -13,6 +13,7 @@ import com.catapi.jpa.BreedRepository;
 import com.catapi.jpa.BreedTranslationRepository;
 import com.catapi.jpa.CatFactRepository;
 import com.catapi.jpa.CatFactTranslationRepository;
+import com.catapi.view.BreedUpdateTranslationView;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
@@ -115,6 +116,15 @@ public class TranslationService {
         breedTranslation.setDescription(description);
         breedTranslation.setUpdateMode(UpdateMode.LINGUA);
         breedTranslationRepository.save(breedTranslation);
+    }
+
+    public void updateBreedTranslation(
+            BreedTranslation breedTranslationToUpdate,
+            BreedUpdateTranslationView breedUpdateTranslationView) {
+        breedTranslationToUpdate.setBreedName(breedUpdateTranslationView.newBreedName());
+        breedTranslationToUpdate.setDescription(breedUpdateTranslationView.newDescription());
+        breedTranslationToUpdate.setUpdateMode(UpdateMode.MANUAL);
+        breedTranslationRepository.save(breedTranslationToUpdate);
     }
 
     private String getLinguatoolsTranslation(Locale locale, String textToTranslate) {
