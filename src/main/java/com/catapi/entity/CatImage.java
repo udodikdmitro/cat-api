@@ -22,4 +22,7 @@ public class CatImage {
 
     @Column(name = "file_location")
     private String fileLocation;
+
+    @Column(name = "external_id")
+    private String externalId;
 }

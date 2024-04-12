@@ -144,7 +144,7 @@ class CatFactServiceTest {
         String newFactText = "Updated cat fact";
         CatFact catFact = new CatFact();
         catFact.setId(id);
-        catFact.setFact("Old cat fact");
+        catFact.setFactText("Old cat fact");
         catFact.setActiveState(ActiveState.ACTIVE);
 
         when(catFactRepository.findById(id)).thenReturn(Optional.of(catFact));
@@ -160,7 +160,7 @@ class CatFactServiceTest {
         CatFact updatedCatFact = captor.getValue();
 
         String expectedSavedText = "Updated cat fact";
-        assertEquals(expectedSavedText, updatedCatFact.getFact());
+        assertEquals(expectedSavedText, updatedCatFact.getFactText());
     }
 
     @Test
@@ -178,7 +178,7 @@ class CatFactServiceTest {
         ActiveState newState = ActiveState.NOT_ACTIVE;
         CatFact catFact = new CatFact();
         catFact.setId(id);
-        catFact.setFact("Some cat fact");
+        catFact.setFactText("Some cat fact");
         catFact.setActiveState(ActiveState.ACTIVE);
 
         when(catFactRepository.findById(id)).thenReturn(Optional.of(catFact));

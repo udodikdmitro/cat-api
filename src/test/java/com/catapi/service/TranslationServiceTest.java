@@ -60,7 +60,7 @@ class TranslationServiceTest {
 
         CatFact catFact1 = new CatFact();
         catFact1.setId(1L);
-        catFact1.setFact("Some text 1");
+        catFact1.setFactText("Some text 1");
         catFact1.setCatFactTranslations(List.of(catFactTranslation));
         catFactTranslation.setCatFact(catFact1);
         mockOkHttpClientResponse("Some text 1", "Якийсь текст 1");
@@ -73,7 +73,7 @@ class TranslationServiceTest {
 
         CatFact catFact2 = new CatFact();
         catFact2.setId(2L);
-        catFact2.setFact("Some text 2");
+        catFact2.setFactText("Some text 2");
         catFact2.setCatFactTranslations(List.of(catFactTranslation2));
         catFactTranslation2.setCatFact(catFact2);
 
