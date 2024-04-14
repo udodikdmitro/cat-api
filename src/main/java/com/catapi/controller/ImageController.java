@@ -17,7 +17,7 @@ public class ImageController {
 
     @GetMapping("/update")
     public ResponseEntity<String> updateBreedsFromExternalApiController() {
-        catImageService.saveCatImage();
+        catImageService.getAndSaveAllCatImagesFromExternalApi();
         return ResponseEntity.ok("Images are updated");
     }
 }

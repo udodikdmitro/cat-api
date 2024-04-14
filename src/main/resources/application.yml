@@ -1,7 +1,7 @@
 settings:
   api-key: live_tF1DP6ary6TwsK1YceaeoMQ7B6cRuZFLQr23GFU3ZtVe5AwM8yZSYTkczB4WYXZ2
   folder:
-    root: C:\Users\udmyt\OneDrive\Изображения\Cat Api
+    root: "C:/Files/Cat Api"
 logging:
   pattern:
     console: "%clr([%d]) %clr([%-5level]) [%logger] - %msg%n"
