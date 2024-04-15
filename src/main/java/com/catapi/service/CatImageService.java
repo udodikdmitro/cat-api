@@ -12,23 +12,22 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
 public class CatImageService {
-    public static final String CAT_IMAGE_API_URL =
-            "https://api.thecatapi.com/v1/images/search?limit=100&page=";
+    public static final String CAT_IMAGE_API_URL = "https://api.thecatapi.com/v1/images/search?limit=100&page=";
     public static final String BREED_IDS_PART = "&breed_ids=";
     public static final String API_KEY_PART = "&api_key=";
 
@@ -48,21 +47,16 @@ public class CatImageService {
     }
 
     public void saveImageFromURL(String imageUrl, String savePath) {
-        try {
-            URI uri = new URI("https://www.example.com");
-            URL url = uri.toURL();
-            InputStream inputStream = url.openStream();
-            String fileName = getFileName(imageUrl);
-            String fullImagePath = STR."\{savePath}\\\{fileName}";
-            Path filePath = Paths.get(fullImagePath);
-            Files.createFile(filePath);
-            Files.copy(
-                    inputStream,
-                    filePath,
-                    StandardCopyOption.REPLACE_EXISTING
-            );
+        String fileName = getFileName(imageUrl);
+        String fullImagePath = STR."\{savePath}\{getOSSlashSymbol()}\{fileName}";
+        URL url = getUriFromUrl(imageUrl);
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(fullImagePath)) {
+            ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+            FileChannel fileChannel = fileOutputStream.getChannel();
+            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             log.debug("Image file is saved {}", fileName);
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             log.error("Cannot save the image {}", e.getMessage());
         }
     }
@@ -72,8 +66,8 @@ public class CatImageService {
             Long pageNumber = 0L;
             List<CatImageView> startBreedImagePage = getPageImages(pageNumber, outerBreedId);
             if (!startBreedImagePage.isEmpty()) {
-                CatImageView first = startBreedImagePage.getFirst();
-                String firstId = first.id();
+                CatImageView firstImage = startBreedImagePage.getFirst();
+                String currentFirstImageId = firstImage.id();
 
                 while (true) {
                     pageNumber++;
@@ -83,11 +77,11 @@ public class CatImageService {
                     }
                     CatImageView firstOfPage = startBreedImagePage.getFirst();
                     String firstOfPageId = firstOfPage.id();
-                    if (firstId.equals(firstOfPageId)) {
+                    if (currentFirstImageId.equals(firstOfPageId)) {
                         break;
                     } else {
                         startBreedImagePage.addAll(currentBreedImagePage);
-                        firstId = firstOfPageId;
+                        currentFirstImageId = firstOfPageId;
                     }
                 }
                 for (CatImageView catImageView : startBreedImagePage) {
@@ -117,8 +111,15 @@ public class CatImageService {
                     new ParameterizedTypeReference<>(){}
             );
         } catch (Exception e){
-            throw new ExternalApiException("Cannot get cat image response from external api: "
-                    + e.getMessage());
+            throw new ExternalApiException(STR."Cannot get cat image response from external api: \{e.getMessage()}");
+        }
+    }
+
+    private URL getUriFromUrl(String url) {
+        try {
+            return new URI(url).toURL();
+        } catch (URISyntaxException | MalformedURLException e) {
+            throw new ExternalApiException(e.getMessage());
         }
     }
 
@@ -129,5 +130,10 @@ public class CatImageService {
         } else {
             throw new ExternalApiException("Url must contain /");
         }
+    }
+
+    private String getOSSlashSymbol() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.contains("windows") ? "\\" : "/";
     }
 }
