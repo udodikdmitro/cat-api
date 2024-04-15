@@ -60,7 +60,7 @@ public class TranslationService {
                     .findFirst();
 
             if (localeTranslation.isEmpty()) {
-                String textToTranslate = fact.getFact();
+                String textToTranslate = fact.getFactText();
                 String translationText = getLinguatoolsTranslation(locale, textToTranslate);
                 createCatFactTranslation(fact, locale, translationText);
                 log.debug(STR."New CatFact translation to \{locale} is created");

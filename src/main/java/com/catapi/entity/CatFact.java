@@ -23,7 +23,7 @@ public class CatFact {
     private Long id;
 
     @Column(name = "fact")
-    private String fact;
+    private String factText;
 
     @Column(name = "active_state")
     @Enumerated(EnumType.STRING)

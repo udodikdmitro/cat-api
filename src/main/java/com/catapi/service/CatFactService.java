@@ -79,7 +79,7 @@ public class CatFactService{
             if (isFactNew){
                 log.debug("New cat fact is appeared: {}", preparedFactText);
                 CatFact catFact = new CatFact();
-                catFact.setFact(preparedFactText);
+                catFact.setFactText(preparedFactText);
                 catFact.setActiveState(ActiveState.ACTIVE);
                 catFactRepository.save(catFact);
             }
@@ -90,7 +90,7 @@ public class CatFactService{
     public void updateCatFact(Long id, CatFactUpdateView catFactUpdateView) {
         final CatFact factToUpdate = catFactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(STR."Cat fact with id \{id} is not found"));
-        factToUpdate.setFact(catFactUpdateView.newFactText());
+        factToUpdate.setFactText(catFactUpdateView.newFactText());
         catFactRepository.save(factToUpdate);
     }
 
