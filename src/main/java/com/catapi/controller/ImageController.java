@@ -1,7 +1,6 @@
 package com.catapi.controller;
 
 import com.catapi.service.CatImageService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +15,7 @@ public class ImageController {
     }
 
     @GetMapping("/update")
-    public ResponseEntity<String> updateBreedsFromExternalApiController() {
+    public void updateBreedsFromExternalApiController() {
         catImageService.getAndSaveAllCatImagesFromExternalApi();
-        return ResponseEntity.ok("Images are updated");
     }
 }

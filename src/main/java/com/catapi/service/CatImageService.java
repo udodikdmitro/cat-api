@@ -1,5 +1,6 @@
 package com.catapi.service;
 
+import com.catapi.entity.Breed;
 import com.catapi.entity.CatImage;
 import com.catapi.exception.ExternalApiException;
 import com.catapi.jpa.BreedRepository;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -46,9 +48,9 @@ public class CatImageService {
         this.bredRepository = bredRepository;
     }
 
-    public void saveImageFromURL(String imageUrl, String savePath) {
+    public String saveImageFromURL(String imageUrl, String savePath) {
         String fileName = getFileName(imageUrl);
-        String fullImagePath = STR."\{savePath}\{getOSSlashSymbol()}\{fileName}";
+        String fullImagePath = STR. "\{ savePath }\{ getOSSlashSymbol() }\{ fileName }" ;
         URL url = getUriFromUrl(imageUrl);
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(fullImagePath)) {
@@ -56,42 +58,51 @@ public class CatImageService {
             FileChannel fileChannel = fileOutputStream.getChannel();
             fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             log.debug("Image file is saved {}", fileName);
+            return fileName;
         } catch (IOException e) {
-            log.error("Cannot save the image {}", e.getMessage());
+            throw new ExternalApiException(e.getMessage());
         }
     }
 
     public void getAndSaveAllCatImagesFromExternalApi() {
-        for (String outerBreedId: bredRepository.getAllOuterBreedId()){
-            Long pageNumber = 0L;
-            List<CatImageView> startBreedImagePage = getPageImages(pageNumber, outerBreedId);
-            if (!startBreedImagePage.isEmpty()) {
-                CatImageView firstImage = startBreedImagePage.getFirst();
-                String currentFirstImageId = firstImage.id();
+        for (Breed breed : bredRepository.findAll()) {
+            getAndSaveBreedImages(breed);
+        }
+        getAndSaveBreedImages(null);
+    }
 
-                while (true) {
-                    pageNumber++;
-                    List<CatImageView> currentBreedImagePage = getPageImages(pageNumber, outerBreedId);
-                    if (currentBreedImagePage.isEmpty()){
-                        break;
-                    }
-                    CatImageView firstOfPage = startBreedImagePage.getFirst();
-                    String firstOfPageId = firstOfPage.id();
-                    if (currentFirstImageId.equals(firstOfPageId)) {
-                        break;
-                    } else {
-                        startBreedImagePage.addAll(currentBreedImagePage);
-                        currentFirstImageId = firstOfPageId;
-                    }
+    public void getAndSaveBreedImages(Breed breed) {
+        String outerBreedId = breed != null
+                ? breed.getOuterBreedId()
+                : "";
+        Long pageNumber = 0L;
+        List<CatImageView> startBreedImagePage = getPageImages(pageNumber, outerBreedId);
+        if (!startBreedImagePage.isEmpty()) {
+            CatImageView firstImage = startBreedImagePage.getFirst();
+            String currentFirstImageId = firstImage.id();
+
+            while (true) {
+                pageNumber++;
+                List<CatImageView> currentBreedImagePage = getPageImages(pageNumber, outerBreedId);
+                if (currentBreedImagePage.isEmpty()) {
+                    break;
                 }
-                for (CatImageView catImageView : startBreedImagePage) {
-                    CatImage catImage = new CatImage();
-                    saveImageFromURL(catImageView.url(), rootFolder);
-                    bredRepository.findByOuterBreedId(outerBreedId).ifPresent(catImage::setBreed);
-                    catImage.setFileLocation(rootFolder);
-                    catImage.setExternalId(catImageView.id());
-                    catImageRepository.save(catImage);
+                CatImageView firstOfPage = startBreedImagePage.getFirst();
+                String firstOfPageId = firstOfPage.id();
+                if (currentFirstImageId.equals(firstOfPageId)) {
+                    break;
+                } else {
+                    startBreedImagePage.addAll(currentBreedImagePage);
+                    currentFirstImageId = firstOfPageId;
                 }
+            }
+            for (CatImageView catImageView : startBreedImagePage) {
+                CatImage catImage = new CatImage();
+                String fileName = saveImageFromURL(catImageView.url(), rootFolder);
+                catImage.setBreed(breed);
+                catImage.setFileLocation(fileName);
+                catImage.setExternalId(catImageView.id());
+                catImageRepository.save(catImage);
             }
         }
     }
@@ -102,16 +113,17 @@ public class CatImageService {
                 .orElseThrow(() -> new ExternalApiException("No body in response"));
     }
 
-    private ResponseEntity<List<CatImageView>> generalImageRequest(Long pageNumber, String breadId){
-        try{
+    private ResponseEntity<List<CatImageView>> generalImageRequest(Long pageNumber, String breadId) {
+        try {
             return restTemplate.exchange(
-                    STR."\{CAT_IMAGE_API_URL}\{pageNumber}\{BREED_IDS_PART}\{breadId}\{API_KEY_PART}\{apiKey}",
+                    STR. "\{ CAT_IMAGE_API_URL }\{ pageNumber }\{ BREED_IDS_PART }\{ breadId }\{ API_KEY_PART }\{ apiKey }" ,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<>(){}
+                    new ParameterizedTypeReference<>() {
+                    }
             );
-        } catch (Exception e){
-            throw new ExternalApiException(STR."Cannot get cat image response from external api: \{e.getMessage()}");
+        } catch (Exception e) {
+            throw new ExternalApiException(STR. "Cannot get cat image response from external api: \{ e.getMessage() }" );
         }
     }
 
@@ -123,7 +135,7 @@ public class CatImageService {
         }
     }
 
-    private String getFileName(String imageUrl){
+    private String getFileName(String imageUrl) {
         int lastSlashIndex = imageUrl.lastIndexOf("/");
         if (lastSlashIndex != -1) {
             return imageUrl.substring(lastSlashIndex + 1);
