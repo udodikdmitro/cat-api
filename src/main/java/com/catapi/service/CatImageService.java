@@ -120,7 +120,7 @@ public class CatImageService {
         }
     }
 
-    private List<CatImageView> getPageImages(Long pageNumber, String outerBreedId) {
+    List<CatImageView> getPageImages(Long pageNumber, String outerBreedId) {
         ResponseEntity<List<CatImageView>> response = generalImageRequest(pageNumber, outerBreedId);
         return Optional.ofNullable(response.getBody())
                 .orElseThrow(() -> new ExternalApiException("No body in response"));
